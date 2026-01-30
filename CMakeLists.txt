@@ -88,9 +88,9 @@ write_basic_package_version_file(
 # ===============================
 install(
     FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-    DESTINATION ${CONFIG_INSTALL_DIR}
+        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+    DESTINATION "lib/cmake/${PROJECT_NAME}"
 )
 
 # ===============================
