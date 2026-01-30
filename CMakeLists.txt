@@ -13,6 +13,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
 # ===============================
 # 라이브러리 생성
@@ -24,7 +25,7 @@ add_library(${PROJECT_NAME} SHARED
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 # ===============================
-# include 경로 (BUILD / INSTALL 분리)
+# include 경로
 # ===============================
 target_include_directories(${PROJECT_NAME}
     PUBLIC
@@ -38,7 +39,13 @@ target_include_directories(${PROJECT_NAME}
 set_target_properties(${PROJECT_NAME} PROPERTIES
     VERSION     ${PROJECT_VERSION}
     SOVERSION   1
-    EXPORT_NAME ${PROJECT_NAME}
+)
+
+# ===============================
+# 설치 경로
+# ===============================
+set(CONFIG_INSTALL_DIR
+    ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
 
 # ===============================
@@ -50,7 +57,7 @@ install(
 )
 
 # ===============================
-# 라이브러리 설치 + Targets export
+# 라이브러리 + Targets
 # ===============================
 install(
     TARGETS ${PROJECT_NAME}
@@ -62,13 +69,28 @@ install(
 )
 
 # ===============================
-# CMake package config (정적 파일)
+# Config.cmake 생성
 # ===============================
-# ※ Yocto에서는 generate 말고 install이 안전함
+configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+    INSTALL_DESTINATION ${CONFIG_INSTALL_DIR}
+)
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+# ===============================
+# Config / Version install
+# ===============================
 install(
     FILES
-        cmake/${PROJECT_NAME}Config.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+    DESTINATION ${CONFIG_INSTALL_DIR}
 )
 
 # ===============================
@@ -78,5 +100,5 @@ install(
     EXPORT ${PROJECT_NAME}Targets
     FILE ${PROJECT_NAME}Targets.cmake
     NAMESPACE ${PROJECT_NAME}::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+    DESTINATION ${CONFIG_INSTALL_DIR}
 )
