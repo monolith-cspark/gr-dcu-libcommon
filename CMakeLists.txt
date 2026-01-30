@@ -13,7 +13,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include(GNUInstallDirs)
-include(CMakePackageConfigHelpers)
 
 # ===============================
 # 라이브러리 생성
@@ -51,7 +50,7 @@ install(
 )
 
 # ===============================
-# 라이브러리 설치
+# 라이브러리 설치 + Targets export
 # ===============================
 install(
     TARGETS ${PROJECT_NAME}
@@ -63,35 +62,18 @@ install(
 )
 
 # ===============================
-# CMake package config 생성
+# CMake package config (정적 파일)
 # ===============================
-
-# Config.cmake
-configure_package_config_file(
-    cmake/${PROJECT_NAME}Config.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-    NO_SET_AND_CHECK_MACRO
-    NO_CHECK_REQUIRED_COMPONENTS_MACRO
-)
-
-# ConfigVersion.cmake
-write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-    VERSION ${PROJECT_VERSION}
-    COMPATIBILITY SameMajorVersion
-)
-
-# ===============================
-# CMake package install
-# ===============================
+# ※ Yocto에서는 generate 말고 install이 안전함
 install(
     FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+        cmake/${PROJECT_NAME}Config.cmake
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
 
+# ===============================
+# Targets install
+# ===============================
 install(
     EXPORT ${PROJECT_NAME}Targets
     FILE ${PROJECT_NAME}Targets.cmake
